@@ -1,0 +1,29 @@
+Package: gcount
+Title: Obtain Raw Read Counts from RNASeq Data
+Version: 0.99.0
+Authors@R: c(
+    person("Arunkumar", "Srinivasan", , "asrinivasan@openanalytics.eu", 
+    c("aut", "cre")), person("Open Analytics", role = "cph"))
+Maintainer: Arunkumar Srinivasan <asrinivasan@openanalytics.eu>
+Depends:
+    R (>= 3.3)
+Imports:
+    utils,
+    methods,
+    gread,
+    data.table (>= 1.9.6),
+    BiocGenerics,
+    S4Vectors,
+    GenomicRanges,
+    GenomicAlignments,
+    bitops
+Suggests:
+    roxygen2,
+    knitr
+Description: Count reads that fall under a feature (gene, exon or intron) by
+    removing ambiguous and/or overlapping reads for downstream analyses.
+License: GPL-3
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
+biocViews: Sequencing, RNASeq, DifferentialExpression, GeneExpression, Software

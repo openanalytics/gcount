@@ -1,0 +1,109 @@
+---
+title: "gcount vignette"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_document:
+    theme: spacelab
+    highlight: pygments
+    css : css/bootstrap.css
+vignette: >
+  %\VignetteIndexEntry{gcount vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo = FALSE, message = FALSE}
+require(gcount)
+require(gcount)
+knitr::opts_chunk$set(
+  comment = "#",
+  error = FALSE,
+  tidy = FALSE,
+  cache = FALSE,
+  collapse=TRUE)
+# options(datatable.auto.index=FALSE)
+```
+
+We've developed three packages for performing differential analysis of NGS 
+data, namely `gread`, `gcount` and `ganalyse`. In short,
+
+* *gread* enables loading or reading in the required data quickly from many 
+different formats in which NGS data and gene annotations are available. 
+
+* *gcount* counts the reads depending on user configuration on *raw* counts.
+
+* *ganalyse* then allows to perform differential gene expression analysis 
+using many methods such as *limma*, *voomlimma* (for `FPKM`), *edger* on the 
+read counts.
+
+In this vignette, we'll discuss the `gcount` package.
+
+***
+
+## gcount package
+
+`gcount` is an R-package that allows to obtain read counts quickly and easily 
+from RNASeq data to be used in downstream analyses.
+
+* `gcount` takes a `bam/bed` file as input.
+
+* allows specification of `paired` or `single` end data.
+
+* allows specification of `unstranded`, `first-strand` or `second-strand` 
+specific.
+
+* filter reads based on number of mismatches prior to counting.
+
+* consider or ignore reads that map to `overlapping genes`.
+
+and allows to count reads that overlap features `genes`, `exons` or `introns`.
+
+## Counting reads
+
+We can obtain *counts* by using `get_counts` function.
+
+```{r}
+counts = get_counts("sample.bam", "sample.gtf", feature="gene_exon", 
+            type="union", library="unstranded", paired=FALSE, 
+            multiple_feature_overlaps=FALSE, verbose=FALSE)
+head(counts[order(-reads)])
+```
+
+#### {.bs-callout .bs-callout-info}
+
+* We count the number of reads for all the genes present in `"sample.gtf"`.
+
+* `feature="gene_exon"` counts reads within each gene across exons alone.
+
+* `type` tells how to handle multiple identical or overlapping features. 
+`"union"` is the most common model (default).
+
+* The reads in `"sample.bam"` file is single-end unstranded. Hence 
+`library="unstranded"` and `paired=FALSE`.
+
+* `multiple_feature_overlaps` is to decide if reads overlapping multiple 
+genes should be counted or not. Default is to skip those reads.
+
+#
+
+See `?get_counts` for a more complete description.
+
+### Using `bam` and `annotation` objects:
+
+`get_counts()` also accepts objects as inputs (in addition to file names). 
+Let's say you have already loaded `"sample.gtf"` on to a variable called 
+`"gtf"`. Then we can simply do:
+
+```{r}
+gtf = gread::read_format("sample.gtf")
+counts = get_counts("sample.bam", gtf, feature="gene_exon", 
+            type="union", library="unstranded", paired=FALSE, 
+            multiple_feature_overlaps=FALSE, verbose=FALSE)
+head(counts[order(-reads)])
+```
+
+We can also provide `bed` files (or objects) as input to `reads` argument of 
+`get_counts()`.
+
+***
+

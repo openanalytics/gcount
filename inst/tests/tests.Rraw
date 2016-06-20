@@ -1,0 +1,91 @@
+# This file should be clean of non-ASCII characters; e.g. CRAN Solaris
+# Use:  grep --color='auto' -P -n "[\x80-\xFF]" tests.Rraw
+if (!exists("test_gcount", .GlobalEnv, inherits=FALSE)) {
+    require(gcount)   # in dev the package should not be loaded
+    options(warn=0L) # use require() to warn but not halt if not available
+    .devtesting=FALSE
+
+    test = gread:::test
+} else {
+    .devtesting=TRUE
+}
+
+sugg_pkgs = c("gread", "GenomicRanges", "data.table", "GenomicAlignments", 
+              "S4Vectors", "bitops", "knitr", "BiocGenerics")
+inst_pkgs = rownames(installed.packages())
+lapply(setNames(sugg_pkgs, nm = sugg_pkgs), function(pkg) if(pkg %in% 
+    inst_pkgs) require(pkg, character.only=TRUE))
+
+INT = function(...) as.integer(c(...))
+
+options(warn=2L)
+nfail = ntest = lastnum = 0L
+whichfail = NULL
+.timingtests = FALSE
+started.at = Sys.time()
+
+gtf_file = "sample.gtf"
+# bed_file = "sample.bed"
+bam_file = "sample.bam"
+# get_counts(bed_file, gtf_file, feature="gene_exon", 
+#              type="union", paired=FALSE, library="unstranded", 
+#              verbose=TRUE)
+
+## basic error check -----------------------------------------
+test(1.1, get_counts(bam_file, gtf_file, feature="gene_exon", 
+            type="union", paired="yes", library="unstranded"), 
+            error="must be logical")
+test(1.2, get_counts(bam_file, gtf_file, feature="gene_exon", 
+            type="union", paired="FALSE", library="unstranded", 
+            multiple_feature_overlaps="yes"), error="must be logical")
+test(1.3, get_counts(bam_file, gtf_file, feature="gene_exon", 
+            type="union", paired="FALSE", library="unstranded", 
+            verbose="yes"), error="must be logical")
+ans = suppressWarnings(
+        get_counts(bam_file, gtf_file, feature="gene_exon", 
+            type="union", paired="FALSE", library="unstranded", 
+            minoverlap=0))
+test(1.4, get_counts(bam_file, gtf_file, feature="gene_exon", 
+            type="union", paired="FALSE", library="unstranded", 
+            minoverlap=0), ans, warning="set back to default")
+test(1.5, get_counts(bam_file, gtf_file, feature="gene", 
+            type="union", paired="FALSE", library="unstranded"), 
+            error="yet implemented")
+
+## bam format ------------------------------------------------
+ans1 = get_counts(bam_file, gtf_file, feature="gene_exon", 
+            type="union", paired="FALSE", library="unstranded")
+ans2 = suppressWarnings(fread("gene-exon-read-counts.csv"))
+setattr(ans2, 'class', c('gene', 'gtf', class(ans2)))
+test(2.1, ans1, ans2)
+
+ans1 = get_counts(bam_file, gtf_file, feature="exon", 
+            type="union", paired="FALSE", library="unstranded")
+ans2 = suppressWarnings(fread("exon-read-counts.csv"))
+setattr(ans2, 'class', c('exon', 'gtf', class(ans2)))
+test(2.2, ans1, ans2)
+
+ans = suppressWarnings(fread("intron-read-counts.csv"))
+setattr(ans, 'class', c('intron', 'gtf', class(ans)))
+test(2.3, get_counts(bam_file, gtf_file, feature="intron", 
+            type="union", paired="FALSE", library="unstranded"), 
+        ans, warning="No introns")
+
+## test summary ----------------------------------------------
+options(warn=0L)
+plat = paste("endian=",.Platform$endian,", sizeof(long double)==",
+                    .Machine$sizeof.longdouble,sep="")
+if (nfail > 0) {
+    if (nfail>1) {s1="s";s2="s: "} else {s1="";s2=" "}
+    cat("\r")
+    stop(nfail," error",s1," out of ",ntest, " (lastID=",
+        lastnum,", ",plat, ") in inst/tests/tests.Rraw on ",
+        date(),". Search tests.Rraw for test number",s2,
+        paste(whichfail,collapse=", "),".")
+    # important to stop() here, so that 'R CMD check' fails
+}
+cat("\rAll ",ntest," tests (lastID=",lastnum,
+    ") in inst/tests/tests.Rraw completed ok in ",
+    timetaken(started.at)," on ",
+    date()," (",plat,")\n",sep="")
+

@@ -1,0 +1,18 @@
+# testing counts
+require(data.table)
+# leuven counts
+old = fread("/Users/asrinivasan/Documents/Joke/02.Data/02.Leuven/01.Counts/Leuven_raw.csv")
+old = old[, c(1L, 4:15), with=FALSE]
+
+new_counts_files = list.files("/Users/asrinivasan/Documents/Joke/02.Data/new-counts", pattern="\\.tsv$", full.names=TRUE)
+new <- lapply(new_counts_files, fread, select=c("gene_id", "reads"))
+setattr(new, 'names', gsub("\\.mgs.*$", "", basename(new_counts_files)))
+new = rbindlist(new, idcol="sample")
+new = dcast(new, gene_id ~ sample, value.var="reads", fill=0L)
+
+old.m = melt(old, id=1L)
+new.m = melt(new, id=1L)
+setnames(old.m, names(new.m))
+
+ans = old.m[new.m, on=c("gene_id", "variable")]
+ans[, ratio := (pmax(value,i.value)+1L)/(pmin(value,i.value)+1L)]

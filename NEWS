@@ -1,0 +1,10 @@
+# v0.1
+
+## Features
+
+1. `get_counts` can count reads from paired/single end first strand / second 
+strand / unstranded RNASeq data.
+
+## Bug fixes
+
+## Notes
