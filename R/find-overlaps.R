@@ -20,9 +20,8 @@ find_overlaps <- function(x, y, ignore_redundant=FALSE,
                 is.gtf(y) || is.gff(y) || is.bam(y) || is.bed(y), 
                 ignore_redundant %in% c(FALSE, TRUE), 
                 ignore_strand %in% c(FALSE, TRUE))
-    x = gread::as_granges(x, ignore_strand)
-    y = gread::as_granges(y, ignore_strand)
-    olaps = GenomicRanges::findOverlaps(x, y, ...)
+    olaps = GenomicRanges::findOverlaps(x, y, 
+                ignore.strand=ignore_strand,  ...)
     olaps = setDT(list(queryHits = queryHits(olaps), 
                     subjectHits = subjectHits(olaps)))
     # findOverlaps for GRanges objects doesn't seem to have ignoreRedundant
