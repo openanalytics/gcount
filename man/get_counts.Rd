@@ -69,10 +69,10 @@ for each feature.
 easily from RNASeq data to be used in downstream analyses.
 }
 \examples{
-path = system.file("tests", package="gcount")
-gtf_file = file.path(path, "sample.gtf")
-bam_file = file.path(path, "sample.bam")
-bam_counts = get_counts(bam_file, gtf_file, feature="gene_exon", 
+path <- system.file("tests", package="gcount")
+gtf_file <- file.path(path, "sample.gtf")
+bam_file <- file.path(path, "sample.bam")
+bam_counts <- get_counts(bam_file, gtf_file, feature="gene_exon", 
              type="union", paired=FALSE, library="unstranded", 
              verbose=TRUE)
 }

@@ -44,10 +44,10 @@
 #' @aliases get_counts
 #' @export
 #' @examples
-#' path = system.file("tests", package="gcount")
-#' gtf_file = file.path(path, "sample.gtf")
-#' bam_file = file.path(path, "sample.bam")
-#' bam_counts = get_counts(bam_file, gtf_file, feature="gene_exon", 
+#' path <- system.file("tests", package="gcount")
+#' gtf_file <- file.path(path, "sample.gtf")
+#' bam_file <- file.path(path, "sample.bam")
+#' bam_counts <- get_counts(bam_file, gtf_file, feature="gene_exon", 
 #'              type="union", paired=FALSE, library="unstranded", 
 #'              verbose=TRUE)
 get_counts <- function(reads, annotation, transcript_id="transcript_id", 
