@@ -18,7 +18,7 @@
 #' \code{FALSE} it will return \code{TRUE} if all tests were successful. Error 
 #' otherwise.
 #' @aliases test_gcount
-#' @seealso \code{\link{read_format}} \code{\link{extract}} \code{\link{tidy}}
+#' @seealso \code{\link{get_counts}}
 #' @examples
 #' \dontrun{
 #' gcount:::test_gcount()
@@ -27,7 +27,7 @@ test_gcount <- function(verbose=FALSE, pkg="pkg", silent=FALSE) {
     if (exists("test_gcount", .GlobalEnv, inherits=FALSE)) { # package developer
         if ("package:gcount" %in% search()) stop("gcount package loaded")
         if (.Platform$OS.type == "unix") {
-            d = path.expand("~/Documents/oa-git/gcount/inst/tests")
+            d = path.expand("~/Documents/oa-github/gcount/inst/tests")
         }
     } else { # user
         d = paste(getNamespaceInfo("gcount", "path"), "/tests", sep="")

@@ -26,7 +26,7 @@
 #' @import gread
 #' @import data.table
 #' @import BiocGenerics
-#' @importFrom GenomicRanges GRanges split
+#' @importFrom GenomicRanges GRanges split mcols
 #' @importMethodsFrom GenomicRanges disjoin reduce intersect findOverlaps 
 #' @importMethodsFrom GenomicRanges countOverlaps seqnames start end strand
 #' @importFrom GenomicAlignments findOverlaps summarizeOverlaps 

@@ -5,7 +5,7 @@ if (!exists("test_gcount", .GlobalEnv, inherits=FALSE)) {
     options(warn=0L) # use require() to warn but not halt if not available
     .devtesting=FALSE
 
-    test = gread:::test
+    test = gcount:::test
 } else {
     .devtesting=TRUE
 }
@@ -56,17 +56,14 @@ test(1.5, get_counts(bam_file, gtf_file, feature="gene",
 ans1 = get_counts(bam_file, gtf_file, feature="gene_exon", 
             type="union", paired="FALSE", library="unstranded")
 ans2 = suppressWarnings(fread("gene-exon-read-counts.csv"))
-setattr(ans2, 'class', c('gene', 'gtf', class(ans2)))
 test(2.1, ans1, ans2)
 
 ans1 = get_counts(bam_file, gtf_file, feature="exon", 
             type="union", paired="FALSE", library="unstranded")
 ans2 = suppressWarnings(fread("exon-read-counts.csv"))
-setattr(ans2, 'class', c('exon', 'gtf', class(ans2)))
 test(2.2, ans1, ans2)
 
 ans = suppressWarnings(fread("intron-read-counts.csv"))
-setattr(ans, 'class', c('intron', 'gtf', class(ans)))
 test(2.3, get_counts(bam_file, gtf_file, feature="intron", 
             type="union", paired="FALSE", library="unstranded"), 
         ans, warning="No introns")

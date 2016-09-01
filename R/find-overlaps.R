@@ -16,8 +16,7 @@
 find_overlaps <- function(x, y, ignore_redundant=FALSE, 
                     ignore_strand=FALSE, ...) {
     # this function is copied from gread
-    stopifnot(is.gtf(x) || is.gff(x) || is.bam(x) || is.bed(x), 
-                is.gtf(y) || is.gff(y) || is.bam(y) || is.bed(y), 
+    stopifnot(inherits(x, "GRanges"), inherits(y, "GRanges"), 
                 ignore_redundant %in% c(FALSE, TRUE), 
                 ignore_strand %in% c(FALSE, TRUE))
     olaps = GenomicRanges::findOverlaps(x, y, 

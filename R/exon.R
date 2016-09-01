@@ -3,10 +3,11 @@ exon_only <- function(reads, exons, minoverlap, library, paired, verbose) {
     if (verbose) message("Getting read counts for feature type 'exon'")
     # to please R CMD CHECK
     g_strand=m_strand=fs=ss=first_strand=second_strand=unstranded=NULL
+    seqname=NULL
     olaps = find_overlaps(reads, exons, ignore_strand=TRUE, 
                 type="any", minoverlap=minoverlap)
-    olaps[, `:=`(m_strand = reads$strand[queryHits], 
-                 g_strand = exons$strand[subjectHits])]
+    olaps[, `:=`(m_strand = as.character(strand(reads))[queryHits], 
+                 g_strand = as.character(strand(exons))[subjectHits])]
     if (!paired) {
       out = olaps[, list(g_strand = g_strand[1], 
                      first_strand = sum(m_strand != g_strand[1]), 
@@ -44,7 +45,13 @@ exon_only <- function(reads, exons, minoverlap, library, paired, verbose) {
         # don't use unstranded = .N it counts 'bad' reads as well. 
         out[, "unstranded" := first_strand + second_strand]
     }
-    exons[, "length" := end-start+1L]
+    exons = data.table::setDT(as(exons, "data.frame"))
+    del_cols = which(names(exons) %in% c("overlaps", "width"))
+    if (length(del_cols)) set(exons, j=del_cols, value=NULL)
+    setnames(exons, "seqnames", "seqname")
+    exons[, "length" := end-start+1L
+        ][, "seqname" := as.character(seqname)
+        ][, "strand" := as.character(strand)]
     exons[, c("first_strand", "second_strand", "unstranded") := 0L]
     exons[out$subjectHits, c("first_strand", "second_strand", "unstranded") := 
                             list(first_strand, second_strand, unstranded)]

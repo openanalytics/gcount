@@ -1,4 +1,3 @@
-seqname	source	feature	start	end	score	strand	frame	attributes
 1	protein_coding	exon	34554	35174	.	-	.	gene_id "ENSG00000237613"; transcript_id "ENST00000417324"; exon_number "3"; gene_biotype "protein_coding"; gene_name "FAM138A"; p_id "P60162"; transcript_name "FAM138A-001"; tss_id "TSS132128";
 1	protein_coding	stop_codon	35138	35140	.	-	0	gene_id "ENSG00000237613"; transcript_id "ENST00000417324"; exon_number "3"; gene_biotype "protein_coding"; gene_name "FAM138A"; p_id "P60162"; transcript_name "FAM138A-001"; tss_id "TSS132128";
 1	protein_coding	CDS	35141	35174	.	-	1	gene_id "ENSG00000237613"; transcript_id "ENST00000417324"; exon_number "3"; gene_biotype "protein_coding"; gene_name "FAM138A"; p_id "P60162"; protein_id "ENSP00000409362"; transcript_name "FAM138A-001"; tss_id "TSS132128";

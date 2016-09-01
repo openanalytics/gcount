@@ -1,4 +1,3 @@
-seqname	source	feature	start	end	score	strand	frame	attributes
 1	protein_coding	gene	34554	36081	.	-	.	Alias=ENSG00000237613;ID=ENSG00000237613;Name=FAM138A;length=1528
 1	protein_coding	RNA	34554	36081	.	-	.	ID=RNA:ENST00000417324;Name=FAM138A-001;Parent=gene:ENSG00000237613
 1	protein_coding	exon	34554	35174	.	-	.	ID=exon:ENST00000417324.3;Parent=protein_coding:ENST00000417324

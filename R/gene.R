@@ -5,11 +5,13 @@ gene_exon <- function(reads, exons, genes, minoverlap, library, paired,
     # to please R CMD CHECK
     N=g_strand=m_strand=hits=fs=ss=first_strand=second_strand=gene_id=NULL
     i.first_strand=i.second_strand=unstranded=bam=NM=i.unstranded=NULL
+    seqname=NULL
     olaps = find_overlaps(reads, exons, ignore_strand=TRUE, type="any", 
                     minoverlap=minoverlap)
-    olaps[, `:=`(m_strand = reads$strand[queryHits], 
-                 g_strand = exons$strand[subjectHits], 
-                 hits = match(exons$gene_id[subjectHits], genes$gene_id))]
+    olaps[, `:=`(m_strand = as.character(strand(reads))[queryHits], 
+                 g_strand = as.character(strand(exons))[subjectHits], 
+                 hits = match(mcols(exons)$gene_id[subjectHits], 
+                            mcols(genes)$gene_id))]
     olaps = olaps[!(duplicated(olaps, by=c("queryHits", "hits")))]
     if (!multiple_feature_overlaps) {
       if (verbose) cat("Filtering reads that overlap more than 1 feature.\n")
@@ -51,10 +53,21 @@ gene_exon <- function(reads, exons, genes, minoverlap, library, paired,
         out[, "unstranded" := first_strand + second_strand]
         # don't use unstranded = .N it counts 'bad' reads as well. 
     }
-    exons[, "length" := end - start + 1L]
+    exons = data.table::setDT(as(exons, "data.frame"))
+    del_cols = which(names(exons) %in% c("overlaps", "width"))
+    if (length(del_cols)) set(exons, j=del_cols, value=NULL)
+    setnames(exons, "seqnames", "seqname")
+    exons[, "length" := end-start+1L
+        ][, "seqname" := as.character(seqname)
+        ][, "strand" := as.character(strand)]
     transcripts.length = exons[, list(length = sum(length)), by = gene_id]
 
-    genes = copy(genes)
+    genes = data.table::setDT(as(genes, "data.frame"))
+    del_cols = which(names(genes) %in% "width")
+    if (length(del_cols)) set(genes, j=del_cols, value=NULL)
+    setnames(genes, "seqnames", "seqname")
+    genes[, "seqname" := as.character(seqname)
+        ][, "strand" := as.character(strand)]
     genes[, c("first_strand", "second_strand", "unstranded") := 0L]
     out[, "gene_id" := genes$gene_id[hits]]
     genes[out, `:=`(first_strand=i.first_strand, 

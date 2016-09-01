@@ -3,10 +3,11 @@ intron_only <- function(reads, introns, minoverlap, library, paired, verbose) {
     if (verbose) message("Getting read counts for feature type 'intron'")
     # to please R CMD CHECK
     g_strand=m_strand=fs=ss=first_strand=second_strand=unstranded=NULL
+    seqname=NULL
     olaps = find_overlaps(reads, introns, ignore_strand=TRUE, 
                 type="any", minoverlap=minoverlap)
-    olaps[, `:=`(m_strand = reads$strand[queryHits], 
-                 g_strand = introns$strand[subjectHits])]
+    olaps[, `:=`(m_strand = as.character(strand(reads))[queryHits], 
+                 g_strand = as.character(strand(introns))[subjectHits])]
     paired = FALSE # keep this if-statement dummy until sure
     if (!paired) {
       out = olaps[, list(g_strand = g_strand[1], 
@@ -45,7 +46,13 @@ intron_only <- function(reads, introns, minoverlap, library, paired, verbose) {
         # don't use unstranded = .N it counts 'bad' reads as well. 
         out[, "unstranded" := first_strand + second_strand]
     }
-    introns[, "length" := end-start+1L]
+    introns = data.table::setDT(as(introns, "data.frame"))
+    del_cols = which(names(introns) %in% c("overlaps", "width"))
+    if (length(del_cols)) set(introns, j=del_cols, value=NULL)
+    setnames(introns, "seqnames", "seqname")
+    introns[, "seqname" := as.character(seqname)
+          ][, "strand" := as.character(strand)
+          ][, "length" := end-start+1L]
     introns[, c("first_strand", "second_strand", "unstranded") := 0L]
     introns[out$subjectHits, c("first_strand", "second_strand", "unstranded") 
                 := list(out$first_strand, out$second_strand, out$unstranded)]
